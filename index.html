@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orçamentos · Oficina de Funilaria e Hidráulica</title>
+<title>Orçamentos · Car Prime Solution</title>
+<link rel="icon" href="logo.jpg">
 <style>
   :root{
-    /* Cores principais (azul profissional) */
-    --brand:#1e40af;
-    --brand-700:#1d4ed8;
-    --brand-900:#172554;
-    --brand-soft:#eff4ff;
+    /* Cores principais (vinho/marrom — Car Prime Solution) */
+    --brand:#7e2d2d;
+    --brand-700:#6f2525;
+    --brand-900:#4a1818;
+    --brand-soft:#f7ebeb;
     --ink:#0f172a;
     --muted:#64748b;
     --muted-2:#94a3b8;
@@ -32,8 +33,8 @@
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     background:
-      radial-gradient(1200px 600px at 100% -10%, #e6edff 0%, transparent 55%),
-      radial-gradient(1000px 500px at -10% 0%, #eef2ff 0%, transparent 50%),
+      radial-gradient(1200px 600px at 100% -10%, #f3e3e3 0%, transparent 55%),
+      radial-gradient(1000px 500px at -10% 0%, #f5e8e8 0%, transparent 50%),
       var(--bg);
     color:var(--ink);
     font-size:15px;
@@ -55,9 +56,8 @@
     display:flex;align-items:center;gap:11px;margin-right:auto;
   }
   .brand .logo{
-    width:38px;height:38px;border-radius:11px;
-    background:linear-gradient(135deg,var(--brand-700),var(--brand-900));
-    display:grid;place-items:center;color:#fff;font-size:19px;
+    width:42px;height:42px;border-radius:50%;
+    object-fit:cover;background:#fff;
     box-shadow:var(--shadow-md);
   }
   .brand .titulo{font-weight:700;font-size:15px;letter-spacing:-.2px;line-height:1.15;}
@@ -104,7 +104,7 @@
   /* faixa superior decorativa */
   .sheet-top{
     height:6px;
-    background:linear-gradient(90deg,var(--brand-900),var(--brand-700),#3b82f6);
+    background:linear-gradient(90deg,var(--brand-900),var(--brand-700),#a85454);
   }
 
   /* Cabeçalho da empresa */
@@ -114,9 +114,9 @@
   }
   .company{flex:1;min-width:260px;display:flex;gap:14px;align-items:flex-start;}
   .company .mark{
-    width:46px;height:46px;border-radius:12px;flex:none;
-    background:var(--brand-soft);color:var(--brand);
-    display:grid;place-items:center;font-size:22px;border:1px solid #dbe6ff;
+    width:64px;height:64px;border-radius:50%;flex:none;
+    object-fit:cover;background:#fff;border:1px solid var(--line);
+    box-shadow:var(--shadow-sm);
   }
   .company .fields{flex:1;min-width:0;}
   .inp-company-name{
@@ -131,13 +131,13 @@
   }
   .inp-company-name::placeholder,.inp-company::placeholder{color:var(--muted-2);}
   .inp-company:hover,.inp-company-name:hover{background:#f8fafc;}
-  .inp-company:focus,.inp-company-name:focus{outline:none;border-color:#bfdbfe;background:#fff;box-shadow:0 0 0 3px var(--brand-soft);color:var(--ink);}
+  .inp-company:focus,.inp-company-name:focus{outline:none;border-color:#e3bcbc;background:#fff;box-shadow:0 0 0 3px var(--brand-soft);color:var(--ink);}
 
   .quote-meta{text-align:right;min-width:190px;}
   .quote-badge{
     display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.4px;
     text-transform:uppercase;color:var(--brand);background:var(--brand-soft);
-    border:1px solid #dbe6ff;padding:4px 10px;border-radius:999px;
+    border:1px solid #ecd6d6;padding:4px 10px;border-radius:999px;
   }
   .quote-number{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-top:8px;}
   .quote-date{font-size:13px;color:var(--muted);margin-top:2px;}
@@ -150,7 +150,7 @@
   }
   .section-title::before{
     content:"";width:18px;height:18px;border-radius:6px;flex:none;
-    background:var(--brand-soft);border:1px solid #dbe6ff;
+    background:var(--brand-soft);border:1px solid #ecd6d6;
   }
 
   .grid{display:grid;gap:12px;}
@@ -245,7 +245,7 @@
   .hist-item:hover{box-shadow:var(--shadow-md);border-color:#cbd5e1;}
   .hist-item .num{
     width:46px;height:46px;border-radius:11px;flex:none;background:var(--brand-soft);
-    color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:13px;border:1px solid #dbe6ff;
+    color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:13px;border:1px solid #ecd6d6;
   }
   .hist-item .info{flex:1;min-width:160px;}
   .hist-item .info .t{font-weight:700;color:var(--ink);}
@@ -281,10 +281,10 @@
 <!-- ===================== BARRA SUPERIOR ===================== -->
 <div class="topbar no-print">
   <div class="brand">
-    <div class="logo">🔧</div>
+    <img class="logo" src="logo.jpg" alt="Car Prime Solution">
     <div>
-      <div class="titulo">Orçamentos da Oficina</div>
-      <div class="sub">Funilaria & Hidráulica</div>
+      <div class="titulo">Car Prime Solution</div>
+      <div class="sub">Funilaria & Hidráulica · Orçamentos</div>
     </div>
   </div>
   <button class="btn btn-green" onclick="novoOrcamento()">＋ Novo</button>
@@ -302,7 +302,7 @@
       <!-- Cabeçalho da empresa -->
       <div class="head">
         <div class="company">
-          <div class="mark">🔧</div>
+          <img class="mark" src="logo.jpg" alt="Car Prime Solution">
           <div class="fields">
             <input class="inp-company-name emp" id="emp_nome" placeholder="Nome da sua oficina">
             <input class="inp-company emp" id="emp_cnpj" placeholder="CNPJ: 00.000.000/0000-00">
@@ -435,7 +435,7 @@ function mostrarAviso(texto){
    ========================================================= */
 function carregarEmpresa(){
   const dados = JSON.parse(localStorage.getItem(CHAVE_EMPRESA) || "{}");
-  setVal("emp_nome",   dados.nome);
+  setVal("emp_nome",   dados.nome || "Car Prime Solution");
   setVal("emp_cnpj",   dados.cnpj);
   setVal("emp_tel",    dados.tel);
   setVal("emp_cidade", dados.cidade);
