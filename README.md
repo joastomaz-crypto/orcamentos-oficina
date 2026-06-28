@@ -16,12 +16,12 @@ HTML (HTML + CSS + JavaScript juntos). Funciona direto no navegador, sem instala
 
 ## Como usar localmente
 
-Abra o arquivo `orcamentos.html` com dois cliques — ele abre no navegador.
+Abra o arquivo `index.html` com dois cliques — ele abre no navegador.
 
 ## Publicado na Vercel
 
-Este projeto é um site estático. O arquivo `vercel.json` faz o endereço
-principal (`/`) abrir o `orcamentos.html`.
+Este projeto é um site estático. O `index.html` é servido automaticamente no
+endereço principal (`/`). Site no ar: https://orcamentos-oficina.vercel.app
 
 ## Observação sobre os dados
 
