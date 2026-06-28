@@ -1,0 +1,19 @@
+# Vercel
+.vercel
+
+# Dependências (caso adicione ferramentas no futuro)
+node_modules/
+
+# Sistema operacional
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+
+# Arquivos temporários
+*.log
+*.tmp

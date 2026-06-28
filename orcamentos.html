@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orçamentos · Oficina de Funilaria e Hidráulica</title>
+<style>
+  :root{
+    /* Cores principais (azul profissional) */
+    --brand:#1e40af;
+    --brand-700:#1d4ed8;
+    --brand-900:#172554;
+    --brand-soft:#eff4ff;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --muted-2:#94a3b8;
+    --line:#e2e8f0;
+    --line-2:#eef2f7;
+    --bg:#f4f6fb;
+    --card:#ffffff;
+    --green:#15803d;
+    --green-soft:#ecfdf5;
+    --red:#dc2626;
+    --shadow-sm:0 1px 2px rgba(15,23,42,.06);
+    --shadow-md:0 8px 24px -8px rgba(15,23,42,.18);
+    --shadow-lg:0 24px 60px -20px rgba(15,23,42,.28);
+    --radius:16px;
+    --radius-sm:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, #e6edff 0%, transparent 55%),
+      radial-gradient(1000px 500px at -10% 0%, #eef2ff 0%, transparent 50%),
+      var(--bg);
+    color:var(--ink);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  /* ============ BARRA SUPERIOR ============ */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:saturate(180%) blur(8px);
+    background:rgba(255,255,255,.82);
+    border-bottom:1px solid var(--line);
+    padding:12px 22px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .brand{
+    display:flex;align-items:center;gap:11px;margin-right:auto;
+  }
+  .brand .logo{
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(135deg,var(--brand-700),var(--brand-900));
+    display:grid;place-items:center;color:#fff;font-size:19px;
+    box-shadow:var(--shadow-md);
+  }
+  .brand .titulo{font-weight:700;font-size:15px;letter-spacing:-.2px;line-height:1.15;}
+  .brand .sub{font-size:12px;color:var(--muted);}
+
+  .btn{
+    cursor:pointer;border:1px solid transparent;border-radius:10px;
+    padding:9px 14px;font-size:14px;font-weight:600;font-family:inherit;
+    display:inline-flex;align-items:center;gap:7px;
+    background:#fff;color:var(--ink);border-color:var(--line);
+    box-shadow:var(--shadow-sm);transition:transform .08s ease, box-shadow .15s ease, background .15s;
+  }
+  .btn:hover{box-shadow:var(--shadow-md);}
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:linear-gradient(135deg,var(--brand-700),var(--brand-900));color:#fff;border-color:transparent;}
+  .btn-green{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border-color:transparent;}
+  .btn-ghost-red{background:#fff;color:var(--red);border-color:#fecaca;}
+  .btn-sm{padding:6px 10px;font-size:13px;border-radius:8px;}
+  .btn-icon{padding:7px 9px;}
+
+  .wrap{max-width:920px;margin:26px auto 60px;padding:0 18px;}
+
+  /* ============ AVISO (toast) ============ */
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;
+    box-shadow:var(--shadow-lg);font-size:14px;font-weight:500;z-index:200;
+    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;
+    display:flex;align-items:center;gap:9px;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;}
+
+  /* ============ FOLHA DO ORÇAMENTO ============ */
+  .sheet{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-lg);
+    overflow:hidden;
+  }
+  .sheet-pad{padding:32px;}
+
+  /* faixa superior decorativa */
+  .sheet-top{
+    height:6px;
+    background:linear-gradient(90deg,var(--brand-900),var(--brand-700),#3b82f6);
+  }
+
+  /* Cabeçalho da empresa */
+  .head{
+    display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    padding-bottom:22px;border-bottom:1px solid var(--line);
+  }
+  .company{flex:1;min-width:260px;display:flex;gap:14px;align-items:flex-start;}
+  .company .mark{
+    width:46px;height:46px;border-radius:12px;flex:none;
+    background:var(--brand-soft);color:var(--brand);
+    display:grid;place-items:center;font-size:22px;border:1px solid #dbe6ff;
+  }
+  .company .fields{flex:1;min-width:0;}
+  .inp-company-name{
+    font-size:21px;font-weight:800;color:var(--brand-900);letter-spacing:-.3px;
+    border:1px solid transparent;border-radius:8px;padding:3px 6px;width:100%;
+    background:transparent;font-family:inherit;
+  }
+  .inp-company{
+    display:block;width:100%;font-size:13px;color:var(--muted);
+    border:1px solid transparent;border-radius:7px;padding:4px 6px;margin-top:2px;
+    background:transparent;font-family:inherit;
+  }
+  .inp-company-name::placeholder,.inp-company::placeholder{color:var(--muted-2);}
+  .inp-company:hover,.inp-company-name:hover{background:#f8fafc;}
+  .inp-company:focus,.inp-company-name:focus{outline:none;border-color:#bfdbfe;background:#fff;box-shadow:0 0 0 3px var(--brand-soft);color:var(--ink);}
+
+  .quote-meta{text-align:right;min-width:190px;}
+  .quote-badge{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.4px;
+    text-transform:uppercase;color:var(--brand);background:var(--brand-soft);
+    border:1px solid #dbe6ff;padding:4px 10px;border-radius:999px;
+  }
+  .quote-number{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-top:8px;}
+  .quote-date{font-size:13px;color:var(--muted);margin-top:2px;}
+
+  /* Seções */
+  .section{margin-top:26px;}
+  .section-title{
+    display:flex;align-items:center;gap:9px;margin:0 0 12px;
+    font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);
+  }
+  .section-title::before{
+    content:"";width:18px;height:18px;border-radius:6px;flex:none;
+    background:var(--brand-soft);border:1px solid #dbe6ff;
+  }
+
+  .grid{display:grid;gap:12px;}
+  .grid.c3{grid-template-columns:repeat(3,1fr);}
+  .grid.c4{grid-template-columns:repeat(4,1fr);}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;}
+  .field input,.field textarea{
+    width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:14px;font-family:inherit;color:var(--ink);background:#fff;transition:border-color .15s, box-shadow .15s;
+  }
+  .field input::placeholder,.field textarea::placeholder{color:var(--muted-2);}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--brand-700);box-shadow:0 0 0 3px var(--brand-soft);}
+  textarea{min-height:88px;resize:vertical;line-height:1.55;}
+
+  /* Tabela de itens */
+  .table-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{
+    background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+    color:var(--muted);text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:4px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#fafbff;}
+  th.t-qtd,td.t-qtd{width:84px;text-align:center;}
+  th.t-num,td.t-num{width:130px;text-align:right;}
+  th.t-act,td.t-act{width:48px;text-align:center;}
+  table input{
+    width:100%;border:1px solid transparent;border-radius:8px;padding:8px 10px;
+    font-size:14px;font-family:inherit;background:transparent;color:var(--ink);
+  }
+  table input:focus{outline:none;border-color:var(--brand-700);background:#fff;box-shadow:0 0 0 3px var(--brand-soft);}
+  table input.ic{text-align:center;}
+  table input.ir{text-align:right;}
+  .cell-total{font-weight:700;color:var(--brand-900);text-align:right;padding-right:12px;font-size:14px;white-space:nowrap;}
+  .row-del{
+    width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;
+    color:var(--muted-2);cursor:pointer;font-size:16px;line-height:1;display:grid;place-items:center;margin:auto;
+  }
+  .row-del:hover{background:#fef2f2;color:var(--red);}
+  .add-row{margin-top:12px;}
+
+  /* Totais */
+  .totals{display:flex;justify-content:flex-end;margin-top:22px;}
+  .totals-box{width:360px;max-width:100%;}
+  .totals-line{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line-2);}
+  .totals-line .lbl{color:var(--muted);font-weight:600;font-size:14px;}
+  .totals-line .val{font-weight:700;font-size:15px;}
+  .totals-input{
+    width:150px;text-align:right;border:1px solid var(--line);border-radius:9px;padding:8px 11px;
+    font-size:14px;font-family:inherit;color:var(--ink);
+  }
+  .totals-input:focus{outline:none;border-color:var(--brand-700);box-shadow:0 0 0 3px var(--brand-soft);}
+  .grand-total{
+    display:flex;justify-content:space-between;align-items:center;margin-top:12px;
+    background:linear-gradient(135deg,var(--brand-900),var(--brand-700));color:#fff;
+    padding:16px 18px;border-radius:14px;box-shadow:var(--shadow-md);
+  }
+  .grand-total .lbl{font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;opacity:.85;}
+  .grand-total .val{font-size:26px;font-weight:800;letter-spacing:-.5px;}
+
+  .sheet-footer{
+    margin-top:30px;padding-top:18px;border-top:1px dashed var(--line);
+    text-align:center;color:var(--muted);font-size:12.5px;
+  }
+
+  /* ============ MODAL HISTÓRICO ============ */
+  .overlay{
+    display:none;position:fixed;inset:0;z-index:100;padding:24px;overflow:auto;
+    background:rgba(15,23,42,.5);backdrop-filter:blur(3px);
+  }
+  .overlay.open{display:flex;align-items:flex-start;justify-content:center;}
+  .modal{
+    background:#fff;border-radius:18px;width:100%;max-width:760px;margin:auto;
+    box-shadow:var(--shadow-lg);overflow:hidden;animation:pop .18s ease;
+  }
+  @keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0;}to{transform:none;opacity:1;}}
+  .modal-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 22px;border-bottom:1px solid var(--line);
+  }
+  .modal-head h2{margin:0;font-size:17px;color:var(--brand-900);display:flex;align-items:center;gap:9px;}
+  .modal-head .count{font-size:12px;color:var(--muted);font-weight:600;background:#f1f5f9;padding:3px 9px;border-radius:999px;}
+  .modal-body{padding:18px 22px;max-height:65vh;overflow:auto;}
+  .empty{text-align:center;color:var(--muted);padding:46px 20px;}
+  .empty .ico{font-size:40px;opacity:.5;}
+  .hist-item{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:11px;
+    transition:box-shadow .15s, border-color .15s;
+  }
+  .hist-item:hover{box-shadow:var(--shadow-md);border-color:#cbd5e1;}
+  .hist-item .num{
+    width:46px;height:46px;border-radius:11px;flex:none;background:var(--brand-soft);
+    color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:13px;border:1px solid #dbe6ff;
+  }
+  .hist-item .info{flex:1;min-width:160px;}
+  .hist-item .info .t{font-weight:700;color:var(--ink);}
+  .hist-item .info .s{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .hist-item .money{font-weight:800;color:var(--green);font-size:15px;}
+
+  @media (max-width:680px){
+    .grid.c3,.grid.c4{grid-template-columns:1fr 1fr;}
+    .sheet-pad{padding:20px;}
+    .quote-meta{text-align:left;}
+  }
+
+  /* ============ IMPRESSÃO ============ */
+  @media print{
+    .no-print,.topbar,.overlay,.toast{display:none !important;}
+    body{background:#fff;font-size:11.5px;}
+    .wrap{margin:0;max-width:100%;padding:0;}
+    .sheet{border:none;box-shadow:none;border-radius:0;}
+    .sheet-top{display:none;}
+    .sheet-pad{padding:0;}
+    .field input,.field textarea,table input,.inp-company,.inp-company-name,.totals-input{
+      border-color:transparent !important;box-shadow:none !important;background:transparent !important;padding:2px 0 !important;
+    }
+    .table-card{border-color:#cbd5e1;}
+    thead th{background:#f1f5f9 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .grand-total{background:var(--brand-900) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .t-act,.row-del,.add-row{display:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== BARRA SUPERIOR ===================== -->
+<div class="topbar no-print">
+  <div class="brand">
+    <div class="logo">🔧</div>
+    <div>
+      <div class="titulo">Orçamentos da Oficina</div>
+      <div class="sub">Funilaria & Hidráulica</div>
+    </div>
+  </div>
+  <button class="btn btn-green" onclick="novoOrcamento()">＋ Novo</button>
+  <button class="btn" onclick="salvarOrcamento()">💾 Salvar</button>
+  <button class="btn" onclick="abrirHistorico()">📂 Histórico</button>
+  <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
+</div>
+
+<!-- ===================== FOLHA ===================== -->
+<div class="wrap">
+  <div class="sheet">
+    <div class="sheet-top"></div>
+    <div class="sheet-pad">
+
+      <!-- Cabeçalho da empresa -->
+      <div class="head">
+        <div class="company">
+          <div class="mark">🔧</div>
+          <div class="fields">
+            <input class="inp-company-name emp" id="emp_nome" placeholder="Nome da sua oficina">
+            <input class="inp-company emp" id="emp_cnpj" placeholder="CNPJ: 00.000.000/0000-00">
+            <input class="inp-company emp" id="emp_tel" placeholder="Telefone: (00) 00000-0000">
+            <input class="inp-company emp" id="emp_cidade" placeholder="Cidade / Endereço">
+          </div>
+        </div>
+        <div class="quote-meta">
+          <span class="quote-badge">Orçamento</span>
+          <div class="quote-number">Nº <span id="orc_numero">0001</span></div>
+          <div class="quote-date">Data: <span id="orc_data">--/--/----</span></div>
+        </div>
+      </div>
+
+      <!-- Cliente -->
+      <div class="section">
+        <h2 class="section-title">Dados do Cliente</h2>
+        <div class="grid c3">
+          <div class="field"><label>Nome</label><input id="cli_nome" placeholder="Nome do cliente"></div>
+          <div class="field"><label>Telefone</label><input id="cli_tel" placeholder="(00) 00000-0000"></div>
+          <div class="field"><label>E-mail</label><input id="cli_email" placeholder="email@exemplo.com"></div>
+        </div>
+      </div>
+
+      <!-- Veículo -->
+      <div class="section">
+        <h2 class="section-title">Dados do Veículo</h2>
+        <div class="grid c4">
+          <div class="field"><label>Placa</label><input id="vei_placa" placeholder="ABC-1D23"></div>
+          <div class="field"><label>Modelo</label><input id="vei_modelo" placeholder="Ex: Gol, Strada"></div>
+          <div class="field"><label>Ano</label><input id="vei_ano" placeholder="2020"></div>
+          <div class="field"><label>Cor</label><input id="vei_cor" placeholder="Prata"></div>
+        </div>
+      </div>
+
+      <!-- Serviços e peças -->
+      <div class="section">
+        <h2 class="section-title">Serviços e Peças</h2>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th class="t-qtd">Qtd.</th>
+                <th class="t-num">Valor Unit.</th>
+                <th class="t-num">Total</th>
+                <th class="t-act no-print"></th>
+              </tr>
+            </thead>
+            <tbody id="itens"></tbody>
+          </table>
+        </div>
+        <div class="add-row no-print">
+          <button class="btn btn-sm" onclick="adicionarLinha()">＋ Adicionar linha</button>
+        </div>
+      </div>
+
+      <!-- Totais -->
+      <div class="totals">
+        <div class="totals-box">
+          <div class="totals-line"><span class="lbl">Subtotal</span><span class="val" id="subtotal">R$ 0,00</span></div>
+          <div class="totals-line"><span class="lbl">Mão de obra</span><input type="number" step="0.01" min="0" id="mao_obra" class="totals-input" value="0" oninput="calcular()"></div>
+          <div class="totals-line"><span class="lbl">Desconto</span><input type="number" step="0.01" min="0" id="desconto" class="totals-input" value="0" oninput="calcular()"></div>
+          <div class="grand-total"><span class="lbl">Total Geral</span><span class="val" id="total_geral">R$ 0,00</span></div>
+        </div>
+      </div>
+
+      <!-- Observações -->
+      <div class="section">
+        <h2 class="section-title">Observações</h2>
+        <div class="field">
+          <textarea id="obs" placeholder="Prazo de entrega, garantia dos serviços, forma de pagamento, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        Este orçamento tem validade de 7 dias · Obrigado pela preferência!
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast"><span class="dot"></span><span id="toast_txt"></span></div>
+
+<!-- ===================== MODAL HISTÓRICO ===================== -->
+<div class="overlay" id="modalHist">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>📂 Orçamentos Salvos <span class="count" id="histCount">0</span></h2>
+      <button class="btn btn-sm" onclick="fecharHistorico()">✕ Fechar</button>
+    </div>
+    <div class="modal-body" id="listaHist"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CHAVES DE ARMAZENAMENTO (localStorage)
+   ========================================================= */
+const CHAVE_EMPRESA   = "oficina_empresa";
+const CHAVE_HISTORICO = "oficina_historico";
+const CHAVE_CONTADOR  = "oficina_contador";
+
+let orcamentoAtualId = null; // id do orçamento aberto (null = ainda não salvo)
+
+/* =========================================================
+   UTILITÁRIOS
+   ========================================================= */
+function dinheiro(valor){
+  return "R$ " + (Number(valor)||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function hoje(){
+  const d = new Date();
+  return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+}
+function val(id){ return document.getElementById(id).value; }
+function setVal(id,v){ document.getElementById(id).value = v||""; }
+function mostrarAviso(texto){
+  const t = document.getElementById("toast");
+  document.getElementById("toast_txt").textContent = texto;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+/* =========================================================
+   DADOS DA EMPRESA (cabeçalho fixo, salvo no navegador)
+   ========================================================= */
+function carregarEmpresa(){
+  const dados = JSON.parse(localStorage.getItem(CHAVE_EMPRESA) || "{}");
+  setVal("emp_nome",   dados.nome);
+  setVal("emp_cnpj",   dados.cnpj);
+  setVal("emp_tel",    dados.tel);
+  setVal("emp_cidade", dados.cidade);
+}
+function salvarEmpresa(){
+  localStorage.setItem(CHAVE_EMPRESA, JSON.stringify({
+    nome:val("emp_nome"), cnpj:val("emp_cnpj"), tel:val("emp_tel"), cidade:val("emp_cidade")
+  }));
+}
+document.querySelectorAll(".emp").forEach(el=>el.addEventListener("input", salvarEmpresa));
+
+/* =========================================================
+   NUMERAÇÃO AUTOMÁTICA
+   ========================================================= */
+function proximoNumero(){
+  let n = parseInt(localStorage.getItem(CHAVE_CONTADOR) || "0", 10);
+  return String(n + 1).padStart(4,"0");
+}
+function consumirNumero(){
+  let n = parseInt(localStorage.getItem(CHAVE_CONTADOR) || "0", 10) + 1;
+  localStorage.setItem(CHAVE_CONTADOR, String(n));
+  return String(n).padStart(4,"0");
+}
+
+/* =========================================================
+   LINHAS DA TABELA DE SERVIÇOS/PEÇAS
+   ========================================================= */
+function adicionarLinha(desc="", qtd="", unit=""){
+  const tbody = document.getElementById("itens");
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td><input type="text" class="desc" placeholder="Ex: Funilaria do paralama, troca de mangueira..."></td>
+    <td class="t-qtd"><input type="number" min="0" step="1" class="ic qtd" placeholder="1"></td>
+    <td class="t-num"><input type="number" min="0" step="0.01" class="ir unit" placeholder="0,00"></td>
+    <td class="t-num cell-total">R$ 0,00</td>
+    <td class="t-act no-print"><button class="row-del" onclick="removerLinha(this)" title="Remover linha">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+  tr.querySelector(".desc").value = desc;
+  tr.querySelector(".qtd").value = qtd;
+  tr.querySelector(".unit").value = unit;
+  tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("input", calcular));
+  calcular();
+}
+function removerLinha(botao){
+  botao.closest("tr").remove();
+  if(document.querySelectorAll("#itens tr").length === 0) adicionarLinha();
+  calcular();
+}
+
+/* =========================================================
+   CÁLCULOS
+   ========================================================= */
+function calcular(){
+  let subtotal = 0;
+  document.querySelectorAll("#itens tr").forEach(tr=>{
+    const qtd  = parseFloat(tr.querySelector(".qtd").value) || 0;
+    const unit = parseFloat(tr.querySelector(".unit").value) || 0;
+    const total = qtd * unit;
+    subtotal += total;
+    tr.querySelector(".cell-total").textContent = dinheiro(total);
+  });
+  const maoObra  = parseFloat(val("mao_obra")) || 0;
+  const desconto = parseFloat(val("desconto")) || 0;
+  document.getElementById("subtotal").textContent    = dinheiro(subtotal);
+  document.getElementById("total_geral").textContent = dinheiro(subtotal + maoObra - desconto);
+}
+
+/* =========================================================
+   NOVO ORÇAMENTO
+   ========================================================= */
+function novoOrcamento(){
+  orcamentoAtualId = null;
+  ["cli_nome","cli_tel","cli_email","vei_placa","vei_modelo","vei_ano","vei_cor","obs"].forEach(id=>setVal(id,""));
+  setVal("mao_obra","0"); setVal("desconto","0");
+  document.getElementById("itens").innerHTML = "";
+  adicionarLinha();
+  document.getElementById("orc_numero").textContent = proximoNumero();
+  document.getElementById("orc_data").textContent   = hoje();
+  calcular();
+  mostrarAviso("Novo orçamento iniciado");
+}
+
+/* =========================================================
+   COLETAR / PREENCHER DADOS
+   ========================================================= */
+function coletarDados(){
+  const itens = [];
+  document.querySelectorAll("#itens tr").forEach(tr=>{
+    itens.push({desc:tr.querySelector(".desc").value, qtd:tr.querySelector(".qtd").value, unit:tr.querySelector(".unit").value});
+  });
+  return {
+    numero: document.getElementById("orc_numero").textContent,
+    data:   document.getElementById("orc_data").textContent,
+    cliente:{nome:val("cli_nome"), tel:val("cli_tel"), email:val("cli_email")},
+    veiculo:{placa:val("vei_placa"), modelo:val("vei_modelo"), ano:val("vei_ano"), cor:val("vei_cor")},
+    itens, maoObra:val("mao_obra"), desconto:val("desconto"), obs:val("obs"),
+    totalTexto: document.getElementById("total_geral").textContent
+  };
+}
+function preencherDados(o){
+  document.getElementById("orc_numero").textContent = o.numero;
+  document.getElementById("orc_data").textContent   = o.data;
+  setVal("cli_nome",o.cliente.nome); setVal("cli_tel",o.cliente.tel); setVal("cli_email",o.cliente.email);
+  setVal("vei_placa",o.veiculo.placa); setVal("vei_modelo",o.veiculo.modelo); setVal("vei_ano",o.veiculo.ano); setVal("vei_cor",o.veiculo.cor);
+  setVal("mao_obra",o.maoObra); setVal("desconto",o.desconto); setVal("obs",o.obs);
+  document.getElementById("itens").innerHTML = "";
+  (o.itens && o.itens.length ? o.itens : [{}]).forEach(it=>adicionarLinha(it.desc,it.qtd,it.unit));
+  calcular();
+}
+
+/* =========================================================
+   HISTÓRICO
+   ========================================================= */
+function lerHistorico(){ return JSON.parse(localStorage.getItem(CHAVE_HISTORICO) || "[]"); }
+function gravarHistorico(lista){ localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(lista)); }
+
+function salvarOrcamento(){
+  const dados = coletarDados();
+  let lista = lerHistorico();
+  if(orcamentoAtualId === null){
+    dados.numero = consumirNumero();
+    document.getElementById("orc_numero").textContent = dados.numero;
+    orcamentoAtualId = "orc_" + Date.now();
+    dados.id = orcamentoAtualId;
+    dados.salvoEm = new Date().toISOString();
+    lista.unshift(dados);
+  }else{
+    dados.id = orcamentoAtualId;
+    const idx = lista.findIndex(x=>x.id === orcamentoAtualId);
+    if(idx >= 0){ dados.salvoEm = lista[idx].salvoEm; lista[idx] = dados; }
+    else { dados.salvoEm = new Date().toISOString(); lista.unshift(dados); }
+  }
+  gravarHistorico(lista);
+  mostrarAviso("Orçamento Nº "+dados.numero+" salvo!");
+}
+
+function abrirHistorico(){
+  const lista = lerHistorico();
+  document.getElementById("histCount").textContent = lista.length;
+  const div = document.getElementById("listaHist");
+  if(lista.length === 0){
+    div.innerHTML = '<div class="empty"><div class="ico">📭</div><p>Nenhum orçamento salvo ainda.<br>Preencha e clique em <b>💾 Salvar</b>.</p></div>';
+  }else{
+    div.innerHTML = lista.map(o=>`
+      <div class="hist-item">
+        <div class="num">${o.numero}</div>
+        <div class="info">
+          <div class="t">${o.cliente.nome || "Cliente não informado"}</div>
+          <div class="s">${o.data} &nbsp;·&nbsp; ${o.veiculo.modelo || "Veículo não informado"} ${o.veiculo.placa ? "("+o.veiculo.placa+")" : ""}</div>
+        </div>
+        <span class="money">${o.totalTexto || ""}</span>
+        <button class="btn btn-sm btn-primary" onclick="abrirOrcamento('${o.id}')">Abrir</button>
+        <button class="btn btn-sm btn-ghost-red" onclick="excluirOrcamento('${o.id}')">Excluir</button>
+      </div>
+    `).join("");
+  }
+  document.getElementById("modalHist").classList.add("open");
+}
+function fecharHistorico(){ document.getElementById("modalHist").classList.remove("open"); }
+
+function abrirOrcamento(id){
+  const o = lerHistorico().find(x=>x.id === id);
+  if(!o) return;
+  orcamentoAtualId = id;
+  preencherDados(o);
+  fecharHistorico();
+  mostrarAviso("Orçamento Nº "+o.numero+" aberto");
+}
+function excluirOrcamento(id){
+  if(!confirm("Tem certeza que deseja excluir este orçamento? Esta ação não pode ser desfeita.")) return;
+  gravarHistorico(lerHistorico().filter(x=>x.id !== id));
+  if(orcamentoAtualId === id) novoOrcamento();
+  abrirHistorico();
+  mostrarAviso("Orçamento excluído");
+}
+
+document.getElementById("modalHist").addEventListener("click", e=>{ if(e.target.id === "modalHist") fecharHistorico(); });
+document.addEventListener("keydown", e=>{ if(e.key === "Escape") fecharHistorico(); });
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+carregarEmpresa();
+novoOrcamento();
+</script>
+</body>
+</html>
